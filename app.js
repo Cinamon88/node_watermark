@@ -1,5 +1,6 @@
 const Jimp = require('jimp');
 const inquirer = require('inquirer');
+const { existsSync } = require('node:fs');
 
 const addTextWatermarkToImage = async function(inputFile, outputFile, text) {
     const image = await Jimp.read(inputFile);
@@ -43,7 +44,7 @@ const startApp = async () => {
         name: 'start',
         message: 'Hi! Welcome to "Watermark manager". Copy your image files to `/img` folder. Then you\'ll be able to use them in the app. Are you ready?',
         type: 'confirm'
-      }]);
+    }]);
   
     // if answer is no, just quit the app
     if(!answer.start) process.exit();
@@ -59,6 +60,7 @@ const startApp = async () => {
       type: 'list',
       choices: ['Text watermark', 'Image watermark'],
     }]);
+
   
     if(options.watermarkType === 'Text watermark') {
         const text = await inquirer.prompt([{
@@ -67,6 +69,12 @@ const startApp = async () => {
           message: 'Type your watermark text:',
         }]);
         options.watermarkText = text.value;
+
+        if (!existsSync(`./img/${options.inputImage}`)) {
+            console.log('Something went wrong. Please try again.');
+            process.exit();
+        }
+        
         addTextWatermarkToImage('./img/' + options.inputImage, './img/' + prepareOutputFilename(options.inputImage), options.watermarkText);
     }
     else {
@@ -77,6 +85,12 @@ const startApp = async () => {
           default: 'logo.png',
         }]);
         options.watermarkImage = image.filename;
+
+        if (!existsSync(`./img/${options.watermarkImage}`)) {
+            console.log('Something went wrong. Please try again.');
+            process.exit();
+        }
+
         addImageWatermarkToImage('./img/' + options.inputImage, './img/' + prepareOutputFilename(options.inputImage), './img/' + options.watermarkImage);
     }
 
