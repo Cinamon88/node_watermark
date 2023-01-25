@@ -12,6 +12,7 @@ const addTextWatermarkToImage = async function(inputFile, outputFile, text) {
 
     image.print(font, 10, 10, textData, image.getWidth(), image.getHeight());
     await image.quality(100).writeAsync(outputFile);  
+    
 };
 
 
@@ -27,32 +28,34 @@ const addImageToWatermarkImage = async function(inputFile, outputFile, watermark
         opacitySource: 0.5,
     });
     await image.quality(100).writeAsync(outputFile);
+    
 };
 
 
 const startApp = async () => {
 
-    // Ask is user is ready
-    const answer = await inquirer.createPromptModule([{
+    // Ask if user is ready
+    const answer = await inquirer.prompt([{
         name: 'start',
         message: 'Hi! Welcome to "Watermark manager". Copy your image files to `/img` folder. Then you\'ll be able to use them in the app. Are you ready?',
-        type: 'confrim'
-    }]);
-
-    // if answer is no just quit the app
+        type: 'confirm'
+      }]);
+  
+    // if answer is no, just quit the app
     if(!answer.start) process.exit();
-
+  
     // ask about input file and watermark type
-    const options = await inquirer.createPromptModule([{
-        name: 'inputImage',
-        type: 'input',
-        message: 'What file do you want to mark?',
-        default: 'test.jpg',
+    const options = await inquirer.prompt([{
+      name: 'inputImage',
+      type: 'input',
+      message: 'What file do you want to mark?',
+      default: 'test.jpg',
     }, {
-        name: 'watermarkType',
-        type: 'list',
-        chocies: ['Text watermark', 'Image watermark'],
+      name: 'watermarkType',
+      type: 'list',
+      choices: ['Text watermark', 'Image watermark'],
     }]);
-}
-
-startApp();
+  
+  }
+  
+  startApp();
